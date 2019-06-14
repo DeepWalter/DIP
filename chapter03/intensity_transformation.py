@@ -6,19 +6,21 @@ def equalize_histogram(image):
 
     Note: currently, it only supports transformations for grayscale
     images.
+
     #TODO: Add support for normalization.
 
     Paramters
     ---------
-    image: ndarray of dimension 2
+    image: 2-dim ndarray of dtype uint8
         The input grayscale image.
     Returns
     -------
-    ndarray of dimension 2
-        The histogram equalization of the input image.
+    2-dim ndarray of dtype uint8
+        The histogram equalization of input image with the same shape
+        and dtype.
     """
     L = 256  # number of intensity levels
-    coefficient = (L - 1) / np.product(image.shape)
+    coefficient = (L - 1) / np.prod(image.shape)
 
     hist = np.histogram(image, bins=range(L + 1))[0]
     hist_cumsum = coefficient * np.cumsum(hist)
