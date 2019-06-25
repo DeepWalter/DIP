@@ -44,13 +44,17 @@ def gamma_correct(image, gamma=1.0):
     Returns
     -------
     2-dim ndarray
-        Gamma corrected image with the same shape as input image.
+        Gamma corrected image with the same shape and dtype as input
+        image.
     """
+    if gamma == 1.0:
+        return image
+
     # Gamma transformation lookup talbe.
     L = 256
     lookup_table = np.arange(L, dtype=np.float)
     np.power(lookup_table / (L - 1), gamma, out=lookup_table)
     np.rint(lookup_table * (L - 1), out=lookup_table)
-    lookup_table.astype(np.uint8, copy=False)
+    lookup_table = lookup_table.astype(np.uint8)
 
     return lookup_table[image]
