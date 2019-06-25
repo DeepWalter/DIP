@@ -7,7 +7,7 @@ def equalize_histogram(image):
     Note: currently, it only supports transformations for grayscale
     images.
 
-    #TODO: Add support for normalization.
+    # TODO: Add support for normalization.
 
     Paramters
     ---------
@@ -27,3 +27,30 @@ def equalize_histogram(image):
     equalization_map = np.rint(hist_cumsum).astype(np.uint8)
 
     return equalization_map[image]
+
+
+def gamma_correct(image, gamma=1.0):
+    """Perform the gamma correction on image.
+
+    Note: currently, it only supports transformations for grayscale
+    images.
+
+    Parameters
+    ----------
+    image: 2-dim ndarray
+        The input grayscale image.
+    gamma: float in [0, 1]
+        Gamma value.
+    Returns
+    -------
+    2-dim ndarray
+        Gamma corrected image with the same shape as input image.
+    """
+    # Gamma transformation lookup talbe.
+    L = 256
+    lookup_table = np.arange(L, dtype=np.float)
+    np.power(lookup_table / (L - 1), gamma, out=lookup_table)
+    np.rint(lookup_table * (L - 1), out=lookup_table)
+    lookup_table.astype(np.uint8, copy=False)
+
+    return lookup_table[image]
