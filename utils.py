@@ -26,7 +26,12 @@ def imshow(image, position=None, title=None, axis='off', cmap='gray',
         applied)
     """
     if position is not None:
-        plt.subplot(position)
+        if isinstance(position, tuple):
+            plt.subplot(*position)
+        elif isinstance(position, int):
+            plt.subplot(position)
+        else:
+            raise ValueError('position should be an int or tuple of ints')
     if axis is not None:
         plt.axis(axis)
     if title is not None:
