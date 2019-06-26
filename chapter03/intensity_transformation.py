@@ -39,7 +39,7 @@ def gamma_correct(image, gamma=1.0):
     ----------
     image: 2-dim ndarray
         The input grayscale image.
-    gamma: float in [0, 1]
+    gamma: nonnegative float
         Gamma value.
     Returns
     -------
@@ -47,6 +47,9 @@ def gamma_correct(image, gamma=1.0):
         Gamma corrected image with the same shape and dtype as input
         image.
     """
+    # Sanity checks.
+    if gamma < 0.0:
+        raise ValueError('Gamma value should be non-negative')
     if gamma == 1.0:
         return image
 
