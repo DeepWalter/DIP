@@ -8,7 +8,8 @@ def bimage2set(image, origin=None):
     their coordinates are computed w.r.t. the given origin. That is, if
     a non-zero pixel has indices `(i, j)` in the image, then its
     coordinates w.r.t. origin is `(i, j) - origin` where `origin` is
-    the numeric form of origin.
+    the numeric form of origin. Also note that the origin is not
+    necessarily inside the image.
 
     Parameters
     ----------
@@ -25,7 +26,7 @@ def bimage2set(image, origin=None):
 
     See Also
     --------
-    set2bimage: convert a set of coordinates to an image.
+    set2bimage: Inverse function.
 
     Note
     ----
@@ -46,7 +47,8 @@ def set2bimage(set):
     set fit according to their relative positions. The coordinates
     correspond to the non-zero pixels in the resulting image. The
     indices of the origin is also returned so that the original set of
-    coordinates can be recovered from them and the resulting image.
+    coordinates can be recovered from them and the resulting image. Also
+    note that the indices may not reside inside the image.
 
     Parameters
     ----------
@@ -76,4 +78,14 @@ def set2bimage(set):
 
 
 if __name__ == '__main__':
-    pass
+    pts = np.array([[-1, -1],
+                    [-1, 0],
+                    [0, 0],
+                    [-1, 1],
+                    [1, -1],
+                    [1, 0],
+                    [1, 1]])
+
+    image, origin = set2bimage(pts)
+    print(image)
+    print(origin)
