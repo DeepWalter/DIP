@@ -29,31 +29,33 @@ class StructuringElement:
         if coordinates:
             self.elems = data
         else:
+            self._origin = origin
             self.image = data
 
-        self._origin = origin
+    @property
+    def image(self):
+        return self._image
 
-        @property
-        def image(self):
-            return self._image
+    @image.setter
+    def image(self, data):
+        self._image = data
+        self._elems = np.transpose(np.nonzero(data)) - self._origin
 
-        @image.setter
-        def image(self, data):
-            self._image = data
-            self._elems = np.transpose(np.nonzero(data)) - self._origin
+    @property
+    def elems(self):
+        return self._elems
 
-        @property
-        def elems(self):
-            return self._elems
-
-        @elems.setter
-        def elems(self, data):
-            self._elems = data
-            xmin, xmax = np.amin(data, axis=1), np.amax(data, axis=1)
-            ymin, ymax = np.amin(data, axis=0), np.amax(data, axis=0)
-            self._origin = (-ymin, -xmin)
-            self._image = np.zeros((xmax-xmin, ymax-ymin), dtype=np.uint8)
-            self._image[data + self.origin] = 1
+    @elems.setter
+    def elems(self, data):
+        self._elems = data
+        xmin, xmax = np.amin(data[:, 1]), np.amax(data[:, 1])
+        ymin, ymax = np.amin(data[:, 0]), np.amax(data[:, 0])
+        print(xmin, xmax)
+        self._origin = (-ymin, -xmin)
+        self._image = np.zeros((xmax-xmin+1, ymax-ymin+1), dtype=np.uint8)
+        x = (data + self._origin)[:, 0]
+        y = (data + self._origin)[:, 1]
+        self._image[x, y] = 1
 
     def to_image(self):
         """Convert the structuring element into an image."""
@@ -64,29 +66,26 @@ class StructuringElement:
         pass
 
 
-class Test:
-    def __init__(self, value, first=True):
-        self.x = x
-        self.y = y
+def bimage2set(image, origin=None):
+    """Convert a binary image to the set of coordinates."""
+    pass
 
-    @property
-    def x(self):
-        return self._x
 
-    @x.setter
-    def x(self, value):
-        self._x = value ** 2
-        self._y =
+def set2bimage(set):
+    pass
 
 
 if __name__ == '__main__':
-    data = np.zeros((3, 3), dtype=np.uint8)
-    data[:, 1] = 1
-    data[1, :] = 1
-    print(data)
+    # data = np.zeros((3, 3), dtype=np.uint8)
+    # data[:, 1] = 1
+    # data[1, :] = 1
+    # print(data)
 
-    # mask = StructuringElement(data, origin=(1, 1))
-    # print(mask.elems)
+    data = np.array([[-1, 0],
+                     [0, -1],
+                     [0, 0],
+                     [1, 0],
+                     [0, 1]])
 
-    t = Test(9, 6)
-    print(t.x, t.y)
+    mask = StructuringElement(data, origin=(1, 1), coordinates=True)
+    print(mask.image)
