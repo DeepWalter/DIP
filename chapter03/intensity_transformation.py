@@ -1,4 +1,5 @@
 import numpy as np
+import cv2 as cv
 
 
 def equalize_histogram(image):
@@ -61,3 +62,28 @@ def gamma_correct(image, gamma=1.0):
     lookup_table = lookup_table.astype(np.uint8)
 
     return lookup_table[image]
+
+
+def bit_planes(image):
+    """Return the bit planes of an image.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        The input grayscale image.
+
+    Returns
+    -------
+    np.ndarray
+        8 bit planes. The first dimension indicates the order of bits
+        with zero being the least significant bit.
+    """
+    bit_mask = 1
+    planes = np.empty((8, *image.shape), dtype=np.uint8)
+
+    for i in range(8):
+        cv.bitwise_and(image, bit_mask, planes[i])
+        planes[i] //= bit_mask
+        bit_mask <<= 1
+
+    return planes
