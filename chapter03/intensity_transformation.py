@@ -32,6 +32,8 @@ def equalize_histogram(image):
 def match_histogram(image, target):
     """Generate an new image with the specified histogram from the given image.
 
+    # TODO: Add support for both hist target and image target.
+
     Parameters
     ----------
     image : np.ndarray
