@@ -3,10 +3,9 @@ import cv2 as cv
 
 
 def equalize_histogram(image):
-    """Compute the histogram equalization of the input image.
+    """Generate an new image with a flat histogram from the given image.
 
-    Note: currently, it only supports transformations for grayscale
-    images.
+    Note: currently, it only supports transformations for grayscale images.
 
     # TODO: Add support for normalization.
 
@@ -28,6 +27,28 @@ def equalize_histogram(image):
     equalization_map = np.rint(hist_cumsum).astype(np.uint8)
 
     return equalization_map[image]
+
+
+def match_histogram(image, target):
+    """Generate an new image with the specified histogram from the given image.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        The input grayscale image.
+    target : np.ndarray
+        The specified histogram of shape (256,).
+    """
+    L = 256
+    image_hist = np.histogram(image, bins=range(L + 1))[0]  # (256,)
+    image_cumhist = np.expand_dims(np.cumsum(image_hist), axis=1)  # (256, 1)
+    target_cumhist = np.expand_dims(np.cumsum(target), axis=0)  # (1, 256)
+
+    abs_diff = np.abs(image_cumhist - target_cumhist)  # (256, 256)
+
+    matching_map = np.argmin(abs_diff, axis=1)  # (256,)
+
+    return matching_map[image]
 
 
 def gamma_correct(image, gamma=1.0):
@@ -76,7 +97,7 @@ def bit_planes(image):
     -------
     np.ndarray
         8 bit planes. The first dimension indicates the order of bits
-        with zero being the least significant bit.
+        with zero corresponding to the least significant bit.
     """
     bit_mask = 1
     planes = np.empty((8, *image.shape), dtype=np.uint8)
