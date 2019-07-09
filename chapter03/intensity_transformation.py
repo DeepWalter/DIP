@@ -32,20 +32,35 @@ def equalize_histogram(image):
 def match_histogram(image, target):
     """Generate an new image with the specified histogram from the given image.
 
-    # TODO: Add support for both hist target and image target.
-
     Parameters
     ----------
     image : np.ndarray
         The input grayscale image.
     target : np.ndarray
-        The specified histogram of shape (256,).
+        The specified histogram of shape (256,) or an image from which
+        the specified histogram is calculated.
     """
     L = 256
-    image_hist = np.histogram(image, bins=range(L + 1))[0]  # (256,)
-    image_cumhist = np.expand_dims(np.cumsum(image_hist), axis=1)  # (256, 1)
-    target_cumhist = np.expand_dims(np.cumsum(target), axis=0)  # (1, 256)
 
+    # image_hist: (256,)
+    image_hist = np.histogram(image, bins=np.arange(L + 1), density=True)[0]
+    image_cumhist = np.expand_dims(np.cumsum(image_hist), axis=1)  # (256, 1)
+
+    assert target.ndim in (1, 2)
+    if target.ndim == 2:
+        target_hist = np.histogram(target, bins=np.arange(L + 1),
+                                   density=True)[0]  # (256,)
+        target_cumhist = np.expand_dims(np.cumsum(target_hist),
+                                        axis=0)  # (1, 256)
+    elif target.ndim == 1:
+        assert len(target) == 256
+        target_cumhist = np.cumsum(target)  # (256,)
+        target_cumhist /= target_cumhist[-1]  # (256,); normalize
+        target_cumhist = np.expand_dims(target_cumhist, axis=0)  # (1, 256)
+    else:
+        pass  # TODO: raise a proper exception here.
+
+    # abs_diff[i, j] = |image_cumhist[i] - target_cumhist[j]|
     abs_diff = np.abs(image_cumhist - target_cumhist)  # (256, 256)
 
     matching_map = np.argmin(abs_diff, axis=1)  # (256,)
