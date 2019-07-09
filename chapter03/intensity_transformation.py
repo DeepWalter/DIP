@@ -1,5 +1,4 @@
 import numpy as np
-import cv2 as cv
 
 
 def equalize_histogram(image):
@@ -128,7 +127,7 @@ def bit_planes(image):
     planes = np.empty((8, *image.shape), dtype=np.uint8)
 
     for i in range(8):
-        cv.bitwise_and(image, bit_mask, planes[i])
+        np.bitwise_and(image, bit_mask, out=planes[i])
         planes[i] //= bit_mask
         bit_mask <<= 1
 
