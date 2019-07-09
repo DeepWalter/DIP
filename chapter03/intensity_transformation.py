@@ -3,7 +3,7 @@ import cv2 as cv
 
 
 def equalize_histogram(image):
-    """Generate an new image with a flat histogram from the given image.
+    """Generate an new image with an equalized histogram from the given image.
 
     Note: currently, it only supports transformations for grayscale images.
 
@@ -11,16 +11,17 @@ def equalize_histogram(image):
 
     Paramters
     ---------
-    image: 2-dim ndarray of dtype uint8
+    image: np.ndarray
         The input grayscale image.
+
     Returns
     -------
-    2-dim ndarray of dtype uint8
+    np.ndarray
         The histogram equalization of input image with the same shape
         and dtype.
     """
     L = 256  # number of intensity levels
-    coefficient = (L - 1) / np.prod(image.shape)
+    coefficient = (L - 1) / image.size
 
     hist = np.histogram(image, bins=range(L + 1))[0]
     hist_cumsum = coefficient * np.cumsum(hist)
@@ -29,16 +30,21 @@ def equalize_histogram(image):
     return equalization_map[image]
 
 
-def match_histogram(image, target):
+def match_histogram(image, reference):
     """Generate an new image with the specified histogram from the given image.
 
     Parameters
     ----------
     image : np.ndarray
         The input grayscale image.
-    target : np.ndarray
+    reference : np.ndarray
         The specified histogram of shape (256,) or an image from which
         the specified histogram is calculated.
+
+    Returns
+    -------
+    np.ndarray
+        Transformed input image.
     """
     L = 256
 
@@ -46,22 +52,24 @@ def match_histogram(image, target):
     image_hist = np.histogram(image, bins=np.arange(L + 1), density=True)[0]
     image_cumhist = np.expand_dims(np.cumsum(image_hist), axis=1)  # (256, 1)
 
-    assert target.ndim in (1, 2)
-    if target.ndim == 2:
-        target_hist = np.histogram(target, bins=np.arange(L + 1),
-                                   density=True)[0]  # (256,)
-        target_cumhist = np.expand_dims(np.cumsum(target_hist),
-                                        axis=0)  # (1, 256)
-    elif target.ndim == 1:
-        assert len(target) == 256
-        target_cumhist = np.cumsum(target)  # (256,)
-        target_cumhist /= target_cumhist[-1]  # (256,); normalize
-        target_cumhist = np.expand_dims(target_cumhist, axis=0)  # (1, 256)
+    assert reference.ndim in (1, 2)
+    if reference.ndim == 2:
+        reference_hist = np.histogram(reference,
+                                      bins=np.arange(L + 1),
+                                      density=True)[0]  # (256,)
+        reference_cumhist = np.expand_dims(np.cumsum(reference_hist),
+                                           axis=0)  # (1, 256)
+    elif reference.ndim == 1:
+        assert len(reference) == 256
+        reference_cumhist = np.cumsum(reference)  # (256,)
+        reference_cumhist /= reference_cumhist[-1]  # (256,); normalize
+        reference_cumhist = np.expand_dims(reference_cumhist,
+                                           axis=0)  # (1, 256)
     else:
         pass  # TODO: raise a proper exception here.
 
-    # abs_diff[i, j] = |image_cumhist[i] - target_cumhist[j]|
-    abs_diff = np.abs(image_cumhist - target_cumhist)  # (256, 256)
+    # abs_diff[i, j] = |image_cumhist[i] - reference_cumhist[j]|
+    abs_diff = np.abs(image_cumhist - reference_cumhist)  # (256, 256)
 
     matching_map = np.argmin(abs_diff, axis=1)  # (256,)
 
