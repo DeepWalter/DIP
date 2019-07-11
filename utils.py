@@ -89,6 +89,38 @@ def bimshow(bimage, ticklabels='on', color='darkgray', figsize=None):
         ax.set_yticklabels(yloc, minor=True)
 
 
+def plot_mask(mask, title=None, fontsize=20):
+    """Plot the mask.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The input mask as a two dimensional array.
+    title : str, optional
+        The title of the mask (default to None).
+    fontsize : int, optional
+        The fontsize of the number inside squares.
+    """
+    h, w = mask.shape
+
+    if title is not None:
+        plt.title(title)
+    plt.axis('scaled')
+    plt.axis([0, 2*w, 0, 2*h])
+    xtks = np.arange(2, 2*w, 2)
+    ytks = np.arange(2, 2*h, 2)
+    plt.xticks(xtks, '')
+    plt.yticks(ytks, '')
+    plt.grid('on')
+
+    for i in range(h):
+        for j in range(w):
+            plt.text(j*2 + 1, i*2 + 1, str(mask[i, j]),
+                     fontsize=fontsize,
+                     horizontalalignment='center',
+                     verticalalignment='center')
+
+
 if __name__ == '__main__':
     image = np.zeros((20, 20), dtype=np.uint8)
     for i in range(20):
