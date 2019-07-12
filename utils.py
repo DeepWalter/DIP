@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from scipy.signal import correlate2d
 import matplotlib.pyplot as plt
 from matplotlib import colors
 
@@ -115,10 +116,25 @@ def plot_mask(mask, title=None, fontsize=20):
 
     for i in range(h):
         for j in range(w):
-            plt.text(j*2 + 1, i*2 + 1, str(mask[i, j]),
+            plt.text(j*2 + 1, 2*h - i*2 - 1, str(mask[i, j]),
                      fontsize=fontsize,
                      horizontalalignment='center',
                      verticalalignment='center')
+
+
+def conv2d(image, kernel, mode='same'):
+    """2 dim correlation.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        The input image.
+    kernel : np.ndarray
+        Kernel.
+    mode : str, optional
+        Padding mode.
+    """
+    return correlate2d(image, kernel, mode=mode)
 
 
 if __name__ == '__main__':
