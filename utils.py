@@ -102,6 +102,7 @@ def plot_mask(mask, title=None, fontsize=20):
     fontsize : int, optional
         The fontsize of the number inside squares.
     """
+    isint = np.issubdtype(mask.dtype.type, np.integer)
     h, w = mask.shape
 
     if title is not None:
@@ -116,7 +117,8 @@ def plot_mask(mask, title=None, fontsize=20):
 
     for i in range(h):
         for j in range(w):
-            plt.text(j*2 + 1, 2*h - i*2 - 1, str(mask[i, j]),
+            s = str(mask[i, j]) if isint else f'{mask[i, j]:.2f}'
+            plt.text(j*2 + 1, 2*h - i*2 - 1, s,
                      fontsize=fontsize,
                      horizontalalignment='center',
                      verticalalignment='center')
