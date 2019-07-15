@@ -137,6 +137,33 @@ def conv2d(image, kernel, mode='same'):
     return correlate2d(image, kernel, mode=mode)
 
 
+def rescale(image):
+    """Rescale the intensity levels of the grayscale image.
+
+    Currently, it only supports rescaling the intensities into the range
+    [0, 255]. # TODO: support more flexible output range.
+
+    This function is mostly used at the final stage of image processing
+    procedure as an alternative to `clip()`.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        The input grayscale image.
+
+    Returns
+    -------
+    np.ndarray
+        The rescaled image.
+    """
+    amin, amax = np.min(image), np.max(image)
+
+    rescaled = (image - amin) / float(amax - amin)
+    rescaled = rescaled * 255
+
+    return np.rint(rescaled).astype(np.uint8)
+
+
 if __name__ == '__main__':
     image = np.zeros((20, 20), dtype=np.uint8)
     for i in range(20):
