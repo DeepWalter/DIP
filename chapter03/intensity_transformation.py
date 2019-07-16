@@ -20,9 +20,9 @@ def equalize_histogram(image):
         and dtype.
     """
     L = 256  # number of intensity levels
-    coefficient = (L - 1) / image.size
+    coefficient = L - 1
 
-    hist = np.histogram(image, bins=range(L + 1))[0]
+    hist = np.histogram(image, bins=np.arange(L + 1), density=True)[0]
     hist_cumsum = coefficient * np.cumsum(hist)
     equalization_map = np.rint(hist_cumsum).astype(np.uint8)
 
