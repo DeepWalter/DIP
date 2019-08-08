@@ -6,25 +6,29 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 
 
-def imshow(image, position=None, title=None, axis='off', cmap='gray',
-           interpolation=None):
+def imshow(image, position=None, title=None, norm=True,
+           axis='off', cmap='gray', interpolation=None):
     """Plot the image.
 
     Parameters
     ----------
-    image: ndarray
+    image : ndarray
         The image to be plotted.
-    position: int or tuple of ints, optional
+    position : int or tuple of ints, optional
         The position of the subplot. See `pyplot.subplot()` for more
         details. If not None, create a subplot according to position and
         plot on it. (default to None)
-    title: str, optional
+    title : str, optional
         The title of the plot. (default to None, no title)
-    axis: str, optional
+    norm : boolean, optional
+        Whether to rescale image data into range [0, 1] before mapping to
+        colors. (default to True)
+        # TODO: support more complex normalizer.
+    axis : str, optional
         Axis options. See `pyplot.imshow()` function for more details.
-    cmap: str, optional
+    cmap : str, optional
         Color map options. (default to 'gray', grayscale colormap)
-    interpolation: str, optional
+    interpolation : str, optional
         Interpolation options. (default to None, no interpolation is
         applied)
     """
@@ -35,6 +39,7 @@ def imshow(image, position=None, title=None, axis='off', cmap='gray',
             plt.subplot(position)
         else:
             raise ValueError('position should be an int or tuple of ints')
+
     if axis is not None:
         plt.axis(axis)
     if title is not None:
@@ -43,6 +48,8 @@ def imshow(image, position=None, title=None, axis='off', cmap='gray',
     kwargs = {'cmap': cmap}
     if interpolation is not None:
         kwargs['interpolation'] = interpolation
+    if not norm:
+        kwargs['vmax'], kwargs['vmin'] = 255, 0
     plt.imshow(image, **kwargs)
 
 
